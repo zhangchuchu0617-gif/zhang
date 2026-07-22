@@ -5,6 +5,7 @@
   "description": "问道 - 多档案 AI 运势测算应用",
   "main": "server.js",
   "scripts": {
+    "build:static": "node scripts/build-static.js",
     "dev": "node --watch server.js",
     "start": "node server.js",
     "test": "node --test tests/*.test.js"
