@@ -8,6 +8,9 @@ const { FOCUS_OPTIONS, birthplaceLabel, normalizeBirthplaceDetail, sanitizeFocus
 
 const PORT = Number(process.argv[2] || process.env.PORT) || 4173;
 const PUBLIC_DIR = path.join(__dirname, 'public');
+const READING_LIMIT_WINDOW_MS = Number(process.env.READING_LIMIT_WINDOW_MS) || 10 * 60 * 1000;
+const READING_LIMIT_MAX = Number(process.env.READING_LIMIT_MAX) || 8;
+const readingAttempts = new Map();
 
 function sendJson(response, status, payload) {
   response.writeHead(status, {
@@ -68,6 +71,25 @@ function isLoopbackRequest(request) {
   return !process.env.PUBLIC_APP && /^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/.test(host);
 }
 
+function requestAddress(request) {
+  return String(request.headers?.['x-forwarded-for'] || request.socket?.remoteAddress || 'unknown')
+    .split(',')[0].trim().slice(0, 80);
+}
+
+function consumeReadingQuota(request, now = Date.now()) {
+  const key = requestAddress(request);
+  const active = (readingAttempts.get(key) || []).filter((time) => now - time < READING_LIMIT_WINDOW_MS);
+  if (active.length >= READING_LIMIT_MAX) return false;
+  active.push(now);
+  readingAttempts.set(key, active);
+  if (readingAttempts.size > 1000) {
+    for (const [address, attempts] of readingAttempts) {
+      if (!attempts.some((time) => now - time < READING_LIMIT_WINDOW_MS)) readingAttempts.delete(address);
+    }
+  }
+  return true;
+}
+
 async function apiHandler(request, response, url) {
   if (request.method === 'GET' && url.pathname === '/api/health') {
     return sendJson(response, 200, { ok: true, service: 'wendao', storageMode: 'device' });
@@ -104,6 +126,7 @@ async function apiHandler(request, response, url) {
   }
 
   if (request.method === 'POST' && url.pathname === '/api/reading') {
+    if (!consumeReadingQuota(request)) return sendJson(response, 429, { error: '测算请求过于频繁，请稍后再试' });
     const body = await parseBody(request);
     const user = normalizeUser(body.user);
     const agent = AGENTS[body.agentId];
@@ -171,4 +194,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { server, apiHandler };
+module.exports = { server, apiHandler, consumeReadingQuota };

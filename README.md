@@ -20,9 +20,14 @@ npm start
 - `AI_API_URL`
 - `AI_API_KEY`
 - `AI_MODEL`
+- `AI_TIMEOUT_MS`
+
+模型密钥只能放在服务端环境变量中，不得写入 `public/` 或上传到仓库。公网版默认对同一地址的 AI 测算请求进行限流。
 
 ## 公网部署
 
 仓库包含 `Dockerfile` 和 `render.yaml`，可直接部署到支持 Node.js 或 Docker 的托管平台。生产环境必须设置 `PUBLIC_APP=1`；档案和对话仍留在每位访问者自己的浏览器中。健康检查地址为 `/api/health`。
+
+仓库同时包含 `api/index.js` 和 `vercel.json`，可以在 Vercel 上同时发布静态页面与保密的 AI 函数。
 
 生产部署时设置 `PUBLIC_APP=1` 可关闭仅供本机旧数据迁移的 `/api/legacy-export` 接口。若未来需要跨设备同步，应在用户明确同意后增加账号、端到端加密与数据导出/删除机制。
