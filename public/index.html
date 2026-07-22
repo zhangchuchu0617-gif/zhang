@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#f3f4f1">
+    <meta name="description" content="问道 - 基于个人命盘、今日干支与连续记忆的多维运势测算">
+    <title>问道 · 运势测算</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div id="app" class="app-shell">
+      <aside class="sidebar" aria-label="主导航">
+        <a class="brand" href="#dashboard" data-route="dashboard" aria-label="问道首页">
+          <span class="brand-mark">道</span>
+          <span class="brand-copy"><strong>问道</strong><small>WENDAO</small></span>
+        </a>
+        <nav class="side-nav" id="side-nav"></nav>
+        <div class="sidebar-bottom">
+          <button class="user-switcher" id="user-switcher" type="button" aria-haspopup="true" title="切换当前档案"></button>
+          <button class="icon-button" id="settings-button" type="button" title="编辑个人信息" aria-label="编辑个人信息">
+            <i data-lucide="settings-2"></i>
+          </button>
+        </div>
+      </aside>
+
+      <header class="mobile-header">
+        <a class="mobile-brand" href="#dashboard" data-route="dashboard"><span class="brand-mark">道</span><strong>问道</strong></a>
+        <button class="mobile-user" id="mobile-user" type="button" aria-label="切换当前档案"></button>
+      </header>
+
+      <main class="main-content" id="main-content" tabindex="-1"></main>
+
+      <nav class="mobile-nav" id="mobile-nav" aria-label="手机导航"></nav>
+    </div>
+
+    <div id="popover-root"></div>
+    <div id="modal-root"></div>
+    <div id="toast-root" aria-live="polite" aria-atomic="true"></div>
+    <script src="/assets/lucide.min.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
