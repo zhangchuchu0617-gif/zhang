@@ -72,6 +72,13 @@ function refreshIcons(root = document) {
 }
 
 async function api(path, options = {}) {
+  const useLocalEngine = window.WendaoLocalApi && (
+    location.protocol === 'file:' ||
+    location.hostname.endsWith('.github.io') ||
+    new URLSearchParams(location.search).has('local-engine')
+  );
+  if (useLocalEngine) return window.WendaoLocalApi.request(path, options);
+
   const response = await fetch(path, {
     ...options,
     headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
