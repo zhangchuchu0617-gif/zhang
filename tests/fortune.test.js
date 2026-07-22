@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { calculateProfile, buildLocalReading, buildOverviewReadings, buildDailyReading } = require('../lib/fortune');
+const { calculateProfile, buildLocalReading, buildOverviewReadings, buildDailyReading, clipAiText } = require('../lib/fortune');
 
 const user = {
   id: 'test-user',
@@ -90,4 +90,10 @@ test('builds five non-interactive overview conclusions from the same chart', () 
   assert.equal(summaries.length, 5);
   assert.deepEqual(summaries.map((item) => item.agentId), ['career', 'love', 'health', 'outfit', 'talisman']);
   assert.ok(summaries.every((item) => item.word && item.summary));
+});
+
+test('clips long AI text at a complete sentence when possible', () => {
+  const sentence = '先观察对方是否持续兑现具体安排。再进行一次低压确认。最后才决定是否推进关系。';
+  assert.equal(clipAiText(sentence, '', 25), '先观察对方是否持续兑现具体安排。');
+  assert.equal(clipAiText('这是一个没有提前标点的很长行动建议文本', '', 12), '这是一个没有提前标点的很…');
 });
