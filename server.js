@@ -194,4 +194,7 @@ if (require.main === module) {
   });
 }
 
-module.exports = { server, apiHandler, consumeReadingQuota };
+module.exports = server;
+module.exports.server = server;
+module.exports.apiHandler = apiHandler;
+module.exports.consumeReadingQuota = consumeReadingQuota;
