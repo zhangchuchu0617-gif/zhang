@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
-const { apiHandler } = require('../server');
+const { apiHandler, consumeReadingQuota } = require('../server');
 
 function jsonRequest(method, body) {
   const request = new EventEmitter();
@@ -57,4 +57,12 @@ test('profile and reading endpoints calculate without a server-side user id', as
   assert.equal(reading.analysisPath.length, 3);
   assert.equal(reading.details.length, 4);
   assert.equal(reading.detailsLocked, true);
+});
+
+test('public reading endpoint applies a per-address request limit', () => {
+  const address = `test-${Date.now()}`;
+  const request = { headers: { 'x-forwarded-for': address } };
+  for (let index = 0; index < 8; index += 1) assert.equal(consumeReadingQuota(request, index), true);
+  assert.equal(consumeReadingQuota(request, 9), false);
+  assert.equal(consumeReadingQuota(request, 600001), true);
 });
