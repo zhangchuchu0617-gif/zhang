@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: wendao-fortune
+    runtime: node
+    plan: free
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: HOST
+        value: 0.0.0.0
+      - key: PUBLIC_APP
+        value: 1
